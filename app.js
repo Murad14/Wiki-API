@@ -12,13 +12,31 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.set('view engine', 'ejs');
 
-mongoose.connect('mongodb://localhost/wikiDB', {
+mongoose.connect('mongodb://127.0.0.1:27017/wikiDB', {
   useNewUrlParser: true,
   useUnifiedTopology: true
 });
 
-app.get('/', (req, res) => {
-  res.render('index');
+const articleSchema = new mongoose.Schema({
+    title: {
+      type: String,
+    //   required: true
+    },
+    content: {
+      type: String,
+    //   required: true
+    }
+})
+const Article = mongoose.model('Article', articleSchema);
+
+app.get("/articles", function(req, res){
+    Article.find(function(err, foundArticles){
+        if (err) {
+            res.send(err);
+        } else {
+            res.send(foundArticles);
+        }
+    })
 });
 
 app.listen(3000, () => {
